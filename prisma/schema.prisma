@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,49 +13,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Reminder {
-  id            String @id @default(uuid())
-  description   String
+model Appointment {
+  id              String   @id @default(uuid())
+  name            String // Nome do pacient
+  email           String
+  phone           String
+  appointmentDate DateTime // Data do agendamento
+  time            String // horário escolhido
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
+  serviceId String // id do serviço agendado
+  service   Service @relation(fields: [serviceId], references: [id])
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  userId String // id da clinica (user)
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Appointment {
-  id            String @id @default(uuid())
-  name          String
-  email         String
-  phone         String
-  appointmentDate DateTime
-  time          String
+model Reminder {
+  id          String @id @default(uuid())
+  description String
 
-  serviceId     String
-  service       Service @relation(fields: [serviceId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Service {
-  id            String @id @default(uuid())
-  name          String
-  price         Int
-  duration      Int
-  status        Boolean @default(true)
+  id       String  @id @default(uuid())
+  name     String
+  price    Int
+  duration Int
+  status   Boolean @default(true)
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  appointments  Appointment[]
+  appointment Appointment[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Plan {
@@ -65,35 +64,35 @@ enum Plan {
 }
 
 model Subscription {
-  id            String @id @default(uuid())
-  status        String
-  plan          Plan
-  priceId       String
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id      String @id @default(uuid())
+  status  String
+  plan    Plan
+  priceId String
 
-  userId        String @unique
-  user          User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  emailVerified DateTime?
-  image         String?
-  address       String? @default("")
-  phone         String? @default("")
-  status        Boolean @default(true)
-  timeZone      String?
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String    @unique
+  emailVerified      DateTime?
+  image              String?
+  address            String?   @default("")
+  phone              String?   @default("")
+  status             Boolean   @default(true)
+  timeZone           String?
   stripe_customer_id String?
-  times         String[] @default([])
+  times              String[]  @default([])
 
-  subscription  Subscription? 
-  services      Service[]
-  reminders     Reminder[]
-  appointments  Appointment[]
+  subscription Subscription?
+  services     Service[]
+  reminders    Reminder[]
+  appointments Appointment[]
 
   accounts      Account[]
   sessions      Session[]
