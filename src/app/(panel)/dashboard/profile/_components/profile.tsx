@@ -6,11 +6,11 @@ import { ProfileFormData, useProfileForm } from './profile-form'
 import { updateProfile } from '../_actions_/update-profile';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatPhone } from '@/utils/formatPhone'
 import { Prisma } from '@prisma/client'
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label'; 
+import { Input } from '@/components/ui/input'; 
 import { Button } from '@/components/ui/button';
 
 import { Form, 
@@ -179,7 +179,11 @@ export function ProfileContent({ user }: ProfileContentProps){
                                             <FormControl>
                                                 <Input 
                                                     {...field} 
-                                                    placeholder='Digite o telefone' 
+                                                    placeholder="(12) 99567-8901" 
+                                                    onChange={(e)=> {
+                                                        const formatedValue = formatPhone(e.target.value)
+                                                        field.onChange(formatedValue)
+                                                    }}
                                                 />
                                             </FormControl>
                                             <FormMessage />
