@@ -23,7 +23,7 @@ export function ServicesList(){
             <section className="mx-auto">
 
                 <Card className="py-2">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pt-2">
                         <CardTitle className="text-xl md:text-2xl font-bold">Serviços</CardTitle>
                             <DialogTrigger asChild> 
                                 <Button>
@@ -32,7 +32,9 @@ export function ServicesList(){
                             </DialogTrigger>
 
                             <DialogContent>
-                                <DialogService/>
+                                <DialogService 
+                                    closeModal={() => {setIsDialogOpen(false)}}
+                                />
                             </DialogContent>
                     </CardHeader>
                 </Card>
