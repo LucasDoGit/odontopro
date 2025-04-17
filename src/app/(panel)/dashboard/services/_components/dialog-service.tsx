@@ -4,6 +4,7 @@ import { DialogServiceFormData, useDialogServiceForm } from "./dialog-service-fo
 import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { createNewService } from "../_actions/create-service"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import {
     Form,
@@ -20,12 +21,20 @@ import { convertRealToCents } from "@/utils/convertCurrency"
 
 interface DialogServiceProps {
     closeModal: () => void;
+    serviceId?: string;
+    initialValues?: {
+        name: string;
+        price: string;
+        hours: string;
+        minutes: string;
+    }
 }
 
-export function DialogService({ closeModal }: DialogServiceProps){
+export function  DialogService({ closeModal, serviceId, initialValues }: DialogServiceProps){
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    const form = useDialogServiceForm()
+    const form = useDialogServiceForm({ initialValues: initialValues })
 
     async function onSumbit(values: DialogServiceFormData){
         setLoading(true);
@@ -50,11 +59,13 @@ export function DialogService({ closeModal }: DialogServiceProps){
 
         toast.success("Serviço adicionado com sucesso!")
         handleCloseModal();
+        router.refresh()
     }
 
     function handleCloseModal(){
         form.reset();
         closeModal();
+        console.log("fechou o modal e resetou")
     }
 
     function changeCurrency(event: React.ChangeEvent<HTMLInputElement>){
@@ -175,7 +186,7 @@ export function DialogService({ closeModal }: DialogServiceProps){
                         className="w-full font-semibold text-white"
                         disabled={loading}
                         >
-                            {loading ? "Cadastrando..." : "Adicionar serviço"}
+                            {loading ? "Carregando..." : `${serviceId ? "Atualizar Serviço" : "Adicionar Serviço"}`}
                     </Button>
                 </form>
             </Form>
