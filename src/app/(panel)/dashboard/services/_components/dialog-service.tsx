@@ -62,10 +62,13 @@ export function  DialogService({ closeModal, serviceId, initialValues }: DialogS
         router.refresh()
     }
 
+    async function editServiceById({ serviceId, name, priceInCents, duration }: { serviceId: string, name: string, priceInCents: number, duration: number }){
+
+    }
+
     function handleCloseModal(){
         form.reset();
         closeModal();
-        console.log("fechou o modal e resetou")
     }
 
     function changeCurrency(event: React.ChangeEvent<HTMLInputElement>){

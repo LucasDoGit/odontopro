@@ -29,10 +29,6 @@ export function ServicesList({ services }: ServiceListProps){
     const [editingService, setEditingService] = useState<null | Service>(null);
     const router = useRouter();
 
-    useEffect(() => (
-        console.log("mudança no editing service")
-    ), [editingService])
-
     async function handleDeleteService(serviceId: string){
         
         const response = await deleteService({ serviceId: serviceId})
@@ -65,11 +61,14 @@ export function ServicesList({ services }: ServiceListProps){
                             </DialogTrigger>
 
                             <DialogContent
+                                onCloseButtonClick={() => {
+                                    setEditingService(null)
+                                    }
+                                }
                                 onInteractOutside={(e) => {
                                     e.preventDefault();
                                     setIsDialogOpen(false);
                                     setEditingService(null);
-                                    console.log("Service: ", editingService)
                                 }}
                             >
                                 <DialogService 
