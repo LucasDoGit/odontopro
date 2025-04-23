@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { convertRealToCents } from "@/utils/convertCurrency"
+import { updateServiceById } from "../_actions/update-service"
 
 interface DialogServiceProps {
     closeModal: () => void;
@@ -44,6 +45,17 @@ export function  DialogService({ closeModal, serviceId, initialValues }: DialogS
 
         const duration = (hours * 60) + minutes;
 
+        if(serviceId){
+            await editServiceById({
+                serviceId: serviceId,
+                priceInCents: priceInCents,
+                duration: duration,
+                name: values.name
+            })
+
+            return;
+        }
+
         const response = await createNewService({
             name: values.name,
             duration: duration,
@@ -63,7 +75,24 @@ export function  DialogService({ closeModal, serviceId, initialValues }: DialogS
     }
 
     async function editServiceById({ serviceId, name, priceInCents, duration }: { serviceId: string, name: string, priceInCents: number, duration: number }){
+        
+        const response = await updateServiceById({
+            serviceId,
+            name,
+            price: priceInCents,
+            duration
+        })
 
+        setLoading(false);
+
+        if(response?.error){
+            toast.error(response.error)
+            return;
+        }
+
+        toast.success("Serviço atualizado com sucesso!")
+        handleCloseModal();
+        router.refresh()
     }
 
     function handleCloseModal(){
