@@ -6,7 +6,7 @@ export async function getInfoSchedule({ userId }: { userId: string }) {
     try {
         
         if(!userId){
-            return { error: "Falha ao buscar dados do usuário" }
+            return null
         }
 
         const user = await prisma.user.findFirst({
@@ -24,14 +24,12 @@ export async function getInfoSchedule({ userId }: { userId: string }) {
         })
 
         if(!user){
-            return { error: "Falha ao buscar dados do usuário" }
+            return null
         }
 
-        return {
-            data: user
-        };
+        return user
 
     } catch (error) {
-        return { error: "Falha ao buscar dados do usuário" }
+        return null
     }
 }
