@@ -40,6 +40,8 @@ import {
 } from "@/components/ui/dialog"
 
 import imgTeste from '../../../../../../public/foto1.png'
+import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation';
 
 type UserWithSubscription = Prisma.UserGetPayload<{
     include: {
@@ -54,6 +56,8 @@ interface ProfileContentProps {
 export function ProfileContent({ user }: ProfileContentProps){
     const [selectHours, setSelectedHours] = useState<string[]>(user.times ?? [])
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
+    const { update } = useSession();
+    const router = useRouter();
 
     const form = useProfileForm({ 
         name: user.name,
@@ -112,6 +116,13 @@ export function ProfileContent({ user }: ProfileContentProps){
         }
 
         toast.success(response.data)
+    }
+
+    async function handleLogout() {
+        await signOut();
+        await update();
+
+        router.replace('/')
     }
     
     return(
@@ -306,6 +317,16 @@ export function ProfileContent({ user }: ProfileContentProps){
                     </Card>
                 </form>
             </Form>
+
+            <section>
+                <Button
+                    className='mt-4'
+                    variant={"destructive"}
+                    onClick={handleLogout}
+                >
+                    Sair da conta
+                </Button>
+            </section>
         </div>
     )
 }
