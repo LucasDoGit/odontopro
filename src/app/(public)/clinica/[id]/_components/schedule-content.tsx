@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useCallback, useEffect } from "react"
 import Image from "next/image"
 import imgTest from '../../../../../../public/foto1.png'
 import { MapPin } from "lucide-react"
@@ -24,9 +25,52 @@ interface ScheduleContentProps {
     clinic?: UserWithServiceAndSubscription
 }
 
+interface TimeSlot {
+    time: string;
+    available: boolean;
+}
+
 export function ScheduleContent({ clinic }: ScheduleContentProps){
+    const [selectedTime, setSelectedTime] = useState("");
+    const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
+
+    const [blocketTimes, setBlockedTimes] = useState<string[]>([]);
 
     const form = useAppointmentForm();
+    const { watch } = form;
+
+    const selectedDate = watch("date");
+    const selectedServiceId = watch("serviceId");
+
+    const fetchBlockedTimes = useCallback(async (date: Date): Promise<string[]> => {
+        setLoadingSlots(true);
+        try {
+            const dateString = date.toISOString().split("T")[0]
+            
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/schedule/get-appointments?userId=${clinic?.id}&date=${dateString}`)
+
+            return []
+        } catch (error) {
+            console.log(error)
+            setLoadingSlots(false)
+            return [];
+        }
+    }, [clinic?.id])
+
+    async function handleRegisterAppointment(formData: AppointmentFormData){
+        console.log(formData)
+    }
+
+    useEffect(() => {
+
+        if(selectedDate){
+            fetchBlockedTimes(selectedDate).then((blocked) => {
+                console.log("horários reservados", blocked)
+            })
+        }
+
+    }, [selectedDate, selectedServiceId, clinic?.times, fetchBlockedTimes])
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -57,7 +101,10 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
 
             <section className="max-w-2xl mx-auto w-full mt-6">
                 <Form {...form}>
-                    <form className="mx-2 space-y-6 bg-white p-6 border rounded-md shadow-sm">
+                    <form 
+                        className="mx-2 space-y-6 bg-white p-6 border rounded-md shadow-sm"
+                        onSubmit={form.handleSubmit(handleRegisterAppointment)}
+                        >
                         <FormField
                             control={form.control}
                             name="name"
@@ -171,6 +218,18 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
                                 </div>
                             )}
                         />
+
+                        {clinic?.status ? (
+                            <Button 
+                                className="w-full bg-emerald-500 hover:bg-emerald-400"
+                                type="submit"
+                                disabled={!watch("name") || !watch("email") || !watch("phone") || !watch("date")}
+                            >
+                                Realizar agendamento
+                            </Button>
+                        ) : (
+                            <p className="bg-red-500 text-white text-center px-4 py-2 rounded">A Clínica está fechada neste momento</p>
+                        )}
 
 
                     </form>

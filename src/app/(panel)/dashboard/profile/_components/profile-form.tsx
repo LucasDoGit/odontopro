@@ -29,7 +29,7 @@ export function useProfileForm({ name, address, phone, status, timeZone}: UserPr
             name: name || "",
             address: address || "",
             phone: phone || "",
-            status: status ? "active" : "inacative",
+            status: status ? "active" : "inactive",
             timeZone: timeZone || "",
         }
     })
