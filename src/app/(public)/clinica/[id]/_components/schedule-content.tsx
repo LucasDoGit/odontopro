@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input"
 import { formatPhone } from "@/utils/formatPhone"
 import { DateTimePicker } from "./date-picker-"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ScheduleTimeList } from "./schedule-time-list"
+import { createNewAppoint } from "../_actions/create-appointment"
+import { toast } from "sonner"
 
 export type UserWithServiceAndSubscription = Prisma.UserGetPayload<{
     include: {
@@ -25,7 +28,7 @@ interface ScheduleContentProps {
     clinic?: UserWithServiceAndSubscription
 }
 
-interface TimeSlot {
+export interface TimeSlot {
     time: string;
     available: boolean;
 }
@@ -50,7 +53,11 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
             
             const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/schedule/get-appointments?userId=${clinic?.id}&date=${dateString}`)
 
-            return []
+            const json = await response.json();
+            setLoadingSlots(false);
+
+            return json;
+
         } catch (error) {
             console.log(error)
             setLoadingSlots(false)
@@ -59,18 +66,63 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
     }, [clinic?.id])
 
     async function handleRegisterAppointment(formData: AppointmentFormData){
-        console.log(formData)
+        if(!selectedTime){
+            return;
+        }
+
+        const appointmentData = {
+            ...formData,
+            time: selectedTime,
+            clinicId: clinic?.id,
+        }
+
+        const response = await createNewAppoint({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            date: formData.date,
+            time: selectedTime,
+            serviceId: formData.serviceId,
+            clinicId: clinic?.id || ""
+        })
+
+        if(response.error){
+            toast.error(response.error)
+            return;
+        }
+
+        toast.success("Consulta agendada com sucesso.")
+        form.reset();
+        setSelectedTime("")
     }
 
     useEffect(() => {
 
         if(selectedDate){
             fetchBlockedTimes(selectedDate).then((blocked) => {
-                console.log("horários reservados", blocked)
+                setBlockedTimes(blocked)
+
+                const times = clinic?.times || [];
+
+                const finalSlots = times.map((time) => ({
+                    time: time,
+                    available: !blocked.includes(time)
+                }))
+
+                setAvailableTimeSlots(finalSlots)
+
+                const stillAvailable = finalSlots.find(
+                    (slot) => slot.time === selectedTime && slot.available
+                )
+
+                if(!stillAvailable){
+                    setSelectedTime("")
+                }
+
             })
         }
 
-    }, [selectedDate, selectedServiceId, clinic?.times, fetchBlockedTimes])
+    }, [selectedDate, selectedTime, clinic?.times, fetchBlockedTimes])
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -182,6 +234,7 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
                                                 onChange={(date) => {
                                                     if(date){
                                                         field.onChange(date)
+                                                        setSelectedTime("")
                                                     }
                                                 }}
                                             />
@@ -200,7 +253,10 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
                                     <FormItem className="">
                                         <FormLabel className="font-semibold">Serviço</FormLabel>
                                         <FormControl>
-                                            <Select onValueChange={field.onChange}>
+                                            <Select onValueChange={(value) => {
+                                                field.onChange(value)
+                                                setSelectedTime("")
+                                            }}>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="selecione um serviço" />
                                                 </SelectTrigger>
@@ -218,6 +274,32 @@ export function ScheduleContent({ clinic }: ScheduleContentProps){
                                 </div>
                             )}
                         />
+
+                        {selectedServiceId && (
+                            <div className="space-y-2">
+                                <Label>Horários Disponíveis</Label>
+                                <div className="bg-gray-100 p-4 rounded-lg">
+                                    {loadingSlots ? (
+                                        <p>Carregando horários...</p>
+                                    ): availableTimeSlots.length === 0 ? (
+                                        <p>Nenhum horário disponível...</p>
+                                    ) : (
+                                        <ScheduleTimeList
+                                            onSelectTime={(time) => setSelectedTime(time)}
+                                            clinicTimes={clinic?.times || []}
+                                            availableTimeSlots={availableTimeSlots}
+                                            blockedTimes={blocketTimes}
+                                            selectedTime={selectedTime}
+                                            selectedDate={selectedDate}
+                                            requiredSlots={
+                                                clinic?.services.find(service => service.id === selectedServiceId) ? Math.ceil(clinic.services.find(service => 
+                                                    service.id === selectedServiceId)!.duration / 30) : 1
+                                            }
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         {clinic?.status ? (
                             <Button 
