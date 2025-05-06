@@ -48,7 +48,13 @@ export function ServicesList({ services }: ServiceListProps){
     }
 
     return(
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+            setIsDialogOpen(open)
+
+            if(!open){
+                setEditingService(null)
+            }
+        }}>
             <section className="mx-auto">
 
                 <Card className="py-2">
@@ -61,10 +67,6 @@ export function ServicesList({ services }: ServiceListProps){
                             </DialogTrigger>
 
                             <DialogContent
-                                onCloseButtonClick={() => {
-                                    setEditingService(null)
-                                    }
-                                }
                                 onInteractOutside={(e) => {
                                     e.preventDefault();
                                     setIsDialogOpen(false);
