@@ -1,4 +1,4 @@
-import { SidebarDashboard } from "./components/sidebar";
+import { SidebarDashboard } from "./_components/sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode}){
     return(
