@@ -23,6 +23,7 @@ import {
 import { useState } from 'react'
 import { DialogAppointment } from './dialog-appointment'
 import { ButtonPickerAppointment } from './button-date'
+import { LoadingSuspense } from '../loading-suspense'
 
 export type AppointmentWithService = Prisma.AppointmentGetPayload<{
     include: {
@@ -119,7 +120,7 @@ export function AppointmentsList({ times }: AppointmentsListPros){
                 <CardContent>
                     <ScrollArea className='h-[calc(100vh-20rem)] lg:h-[calc(100vh-15rem)] pr-4'>
                         {isLoading ? (
-                            <p>Carregando agenda...</p>
+                            <LoadingSuspense />
                         ): (
                             times.map((slot) => {
                                 const occupant = occupantMap[slot]

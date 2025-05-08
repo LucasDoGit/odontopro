@@ -1,6 +1,8 @@
 import getSession from "@/lib/getSession";
 import { redirect } from "next/navigation";
 import { ServiceContent } from "./_components/service-content";
+import { Suspense } from "react";
+import { LoadingSuspense } from "../_components/loading-suspense";
 
 
 export default async function Services(){
@@ -12,8 +14,8 @@ export default async function Services(){
     }
     
     return(
-        <section>
+        <Suspense fallback={<LoadingSuspense/>}>
             <ServiceContent userId={session.user?.id!} />
-        </section>
+        </Suspense>
     )
 }
