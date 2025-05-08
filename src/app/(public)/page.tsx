@@ -2,8 +2,12 @@ import { Footer } from "./_components/footer";
 import { Header } from "./_components/header";
 import { Hero } from "./_components/hero";
 import { Professionals } from "./_components/professionals";
+import { getProfessionals } from "./_data_acess/get-professionals";
 
-export default function Home() {
+export default async function Home() {
+
+  const professional = await getProfessionals();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header/>
@@ -11,7 +15,7 @@ export default function Home() {
       <div>
         <Hero/> 
 
-        <Professionals/>
+        <Professionals professionals={professional || []} />
 
         <Footer/>
       </div>

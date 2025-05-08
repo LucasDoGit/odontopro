@@ -18,8 +18,8 @@ export async function GET(request: NextRequest){
     try {
         
         const [year, mount, day] = dateParam.split("-").map(Number)
-        const startDate = new Date(year, mount -1, day, 0, 0, 0)
-        const endDate = new Date(year, mount -1, day, 23, 59, 59, 999)
+        const startDate = new Date(Date.UTC(year, mount -1, day, 0, 0, 0))
+        const endDate = new Date(Date.UTC(year, mount -1, day, 23, 59, 59, 999))
 
         const user = await prisma.user.findFirst({
             where: {
