@@ -66,7 +66,7 @@ export async function GET(request: NextRequest){
 
         const blockedTimes = Array.from(blockedSlots)
 
-        console.log("blockedTimes: ", blockedTimes)
+        // console.log("blockedTimes: ", blockedTimes)
 
         return NextResponse.json(blockedTimes)
 

@@ -80,8 +80,8 @@ export async function createSubscription({ type }: SubscriptionProps){
         }
 
     } catch (error) {
-        console.log("Erro ao criar checkout")
-        console.log(error)
+        // console.log("Erro ao criar checkout")
+        // console.log(error)
         return {
             sessionId: "",
             error: "Falha ao ativar plano"
