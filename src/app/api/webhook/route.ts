@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"; 
 import Stripe from "stripe";
 import { stripe } from "@/utils/stripe"
+import { manageSubscription } from "@/utils/manage-subscriptions";
+import { revalidatePath } from "next/cache";
+import { Plan } from "@prisma/client";
 
 export const POST = async(request: Request) => {
 
@@ -17,25 +20,50 @@ export const POST = async(request: Request) => {
     const event = stripe.webhooks.constructEvent(
         text,
         signature,
-        process.env.STRIPE_SECRET_WEBOOK_KEY as string,
+        process.env.STRIPE_SECRET_WEBHOOK_KEY as string,
     )
 
     switch(event.type){
         case "customer.subscription.deleted":
             const payment = event.data.object as Stripe.Subscription;
 
-            console.log("Assinatura cancelada", payment)
+            await manageSubscription(
+                payment.id,
+                payment.customer.toString(),
+                false,
+                true
+            )
 
             break;
         case "customer.subscription.updated":
             const paymentIntent = event.data.object as Stripe.Subscription;
 
-            console.log("Assinatura atualizada", paymentIntent)
+            await manageSubscription(
+                paymentIntent.id,
+                paymentIntent.customer.toString(),
+                false,
+            )
+
+            revalidatePath("/dashboard/plans")
+
             break;
         case "checkout.session.completed":
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
 
-            console.log("Assinatura criada", checkoutSession)
+            const type = checkoutSession?.metadata?.type ? checkoutSession?.metadata?.type : "BASIC";
+
+            if (checkoutSession.subscription && checkoutSession.customer) {
+                await manageSubscription(
+                checkoutSession.subscription.toString(),
+                checkoutSession.customer.toString(),
+                true,
+                false,
+                type as Plan
+                )
+            }
+
+            revalidatePath("/dashboard/plans")
+
             break;
 
             default:
