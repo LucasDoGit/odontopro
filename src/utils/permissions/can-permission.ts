@@ -4,6 +4,7 @@
 import { auth } from "@/lib/auth";
 import { PlanDetailInfo } from "./get-plans";
 import prisma from "@/lib/prisma";
+import { canCreateService } from "./can-create-service";
 
 export type PLAN_PROP = "BASIC" | "PROFESSIONAL" | "TRIAL" | "EXPIRED"
 
@@ -40,7 +41,9 @@ export async function canPermission({ type }: CanPermissionProps): Promise<Resul
     switch(type){
         case "service":
 
-            
+        const permission = await canCreateService(subscription, session)
+        
+        return permission;
 
         default:
 
