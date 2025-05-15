@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { subscriptionPlans } from "@/utils/plans";
 import { Button } from "@/components/ui/button";
+import { createPortalCustomer } from "../_actions/create-portal-customer";
 
 interface SubscriptionDetailProps {
     subscription: Subscription
@@ -22,7 +23,14 @@ export function SubscriptionDetail({ subscription }: SubscriptionDetailProps) {
     const subscriptionInfo = subscriptionPlans.find((plan) => plan.id === subscription.plan)
 
     async function handleManageSubscription() {
-        console.log('teste')
+        const portal = await createPortalCustomer()
+
+        if(portal.error){
+            toast.error("Ocorreu um erro criar portal de assinatura")
+            return;
+        }
+
+        window.location.href = portal.sessionId;
     }
 
     return (
