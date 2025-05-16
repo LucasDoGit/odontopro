@@ -19,15 +19,20 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { deleteService } from "../_actions/delete-service";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ResultPermissionProps } from "@/utils/permissions/can-permission";
+import Link from "next/link";
 
 interface ServiceListProps {
     services: Service[]
+    permissions: ResultPermissionProps
 }
 
-export function ServicesList({ services }: ServiceListProps){
+export function ServicesList({ services, permissions }: ServiceListProps){
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingService, setEditingService] = useState<null | Service>(null);
     const router = useRouter();
+
+    const servicesList = permissions.hasPermission ? services : services.slice(0, 3)
 
     async function handleDeleteService(serviceId: string){
         
@@ -60,11 +65,19 @@ export function ServicesList({ services }: ServiceListProps){
                 <Card className="py-2">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pt-2">
                         <CardTitle className="text-xl md:text-2xl font-bold">Serviços</CardTitle>
-                            <DialogTrigger asChild> 
-                                <Button>
-                                    <Plus className="w-4 h-4"/>
-                                </Button>
-                            </DialogTrigger>
+                            {permissions.hasPermission && (
+                                <DialogTrigger asChild> 
+                                    <Button>
+                                        <Plus className="w-4 h-4"/>
+                                    </Button>
+                                </DialogTrigger>
+                            )}
+
+                            {!permissions.hasPermission && (
+                                <Link href="/dashboard/plans" className="text-red-500">
+                                    Limite de serviços excedido
+                                </Link>
+                            )}
 
                             <DialogContent
                                 onInteractOutside={(e) => {
@@ -91,7 +104,7 @@ export function ServicesList({ services }: ServiceListProps){
                     
                     <CardContent>
                         <section className="space-y-4 mt-5">
-                            {services.map( service => (
+                            {servicesList.map( service => (
                                 <article 
                                     key={service.id}
                                     className="flex items-center justify-between"

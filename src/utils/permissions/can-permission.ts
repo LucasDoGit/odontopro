@@ -15,8 +15,10 @@ export interface ResultPermissionProps {
     plan: PlanDetailInfo | null,
 }
 
+type TypeCheck = "service"
+
 interface CanPermissionProps {
-    type: string;
+    type: TypeCheck;
 }
 
 export async function canPermission({ type }: CanPermissionProps): Promise<ResultPermissionProps>{
