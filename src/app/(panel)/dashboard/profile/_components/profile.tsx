@@ -1,7 +1,7 @@
 "use client"
 
 import { use, useState } from 'react';
-import Image from 'next/image';
+
 import { ProfileFormData, useProfileForm } from './profile-form'
 import { updateProfile } from '../_actions_/update-profile';
 import { ArrowRight } from 'lucide-react';
@@ -39,9 +39,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 
-import imgTeste from '../../../../../../public/foto1.png'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation';
+import { AvatarProfile } from './profile-avatar';
 
 type UserWithSubscription = Prisma.UserGetPayload<{
     include: {
@@ -135,14 +135,7 @@ export function ProfileContent({ user }: ProfileContentProps){
                         </CardHeader>
                         <CardContent className='space-y-6'>
                             <div className='flex justify-center'>
-                                <div className='bg-gray-200 relative h-40 w-40 rounded-full overflow-hidden'>
-                                    <Image
-                                        src={user.image ? user.image : imgTeste}
-                                        alt='Foto da Clínica'
-                                        fill
-                                        className='object-cover'
-                                    />
-                                </div>
+                                <AvatarProfile userId={user.id} avatarUrl={user.image} />
                             </div>
 
                             <div className='space-y-4'>
