@@ -5,6 +5,8 @@ import Image from "next/image";
 import semFoto from '../../../../../../public/foto1.png'
 import { Loader, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { updateProfileAvatar } from "../_actions_/update-profile-avatar";
+import { useSession } from "next-auth/react";
 
 interface AvatarProfileProps {
     avatarUrl: string | null;
@@ -14,6 +16,7 @@ interface AvatarProfileProps {
 export function AvatarProfile({avatarUrl, userId}: AvatarProfileProps){
     const [previewImage, setPreviewImage] = useState(avatarUrl);
     const [loading, setLoading] = useState(false);
+    const { update } = useSession();
 
     async function handleChange(e: ChangeEvent<HTMLInputElement>){
 
@@ -31,11 +34,26 @@ export function AvatarProfile({avatarUrl, userId}: AvatarProfileProps){
 
             const urlImage = await uploadImage(newFile)
 
-            if(urlImage){
-                setPreviewImage(urlImage)
-                setLoading(false);
-                toast.success("Imagem alterada com sucesso")
+            if(!urlImage || urlImage === ""){
+                toast.error("Erro ao atualizar imagem de perfil")
+                return
             }
+            
+            setPreviewImage(urlImage)
+
+            const updateAvatarImage = await updateProfileAvatar({ avatarUrl: urlImage })
+
+            if(!updateAvatarImage){
+                toast.error("Erro ao atualizar imagem de perfil")
+                return
+            }
+
+            await update({
+                image: urlImage
+            })
+
+            setLoading(false);
+            toast.success("Imagem alterada com sucesso")
         }
     }
 
