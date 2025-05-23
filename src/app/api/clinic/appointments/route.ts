@@ -44,4 +44,4 @@ export const GET = auth(async function GET(request) {
     } catch (error) {
         return NextResponse.json({ error: "Falha ao buscar agendamentos" }, { status: 400 })
     }
-})
+}) as any;
