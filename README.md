@@ -153,7 +153,7 @@ O *OdontoPRO* é um sistema completo para clínicas, onde:
   ````
 
 4. (opcional) Configurar webook local para receber eventos do stripe.
-  - Baixar o stripe CLI e seguir a documentação para clicando neste [link](https://docs.stripe.com/webhooks) para configurar o webook local.
+    - Baixar o stripe CLI e seguir a documentação clicando neste [link](https://docs.stripe.com/webhooks).
 
 5. Criar as migrations com o prisma
   ```bash
