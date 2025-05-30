@@ -11,7 +11,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet" 
 import { Button } from "@/components/ui/button"
-import { LogIn, Menu } from "lucide-react";
+import { LogIn, Menu, UserCog } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { handleRegister } from "../../_actions/login";
 
@@ -25,7 +25,11 @@ export function Header(){
     ]
 
     async function handleLogin(){
-        await handleRegister("google")
+        await handleRegister("google", false)
+    }
+
+    async function handleDemoLogin(){
+        await handleRegister("credentials", true)
     }
 
     const NavLinks = () => (
@@ -51,10 +55,16 @@ export function Header(){
                     Acessar clínica
                 </Link>
             ) : (
-                <Button onClick={handleLogin}>
-                    <LogIn/>
-                    Fazer Login
-                </Button>
+                <div className="flex gap-2">
+                    <Button onClick={handleLogin}>
+                        <LogIn/>
+                        Fazer Login
+                    </Button>
+                    <Button onClick={handleDemoLogin} className="bg-emerald-500 hover:bg-emerald-400">
+                        <UserCog/>
+                        Login Demo
+                    </Button>
+                </div>
             )}
         </>
     )
