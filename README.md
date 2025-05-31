@@ -18,7 +18,7 @@
 
 ## Introdução
 
-Este é um projeto de sistema Sass para clínicas, com objetivo principal de organizar e facilitar o agendamento de consultas e também oferecer serviços para clientes. Cada clínica possui uma agenda que pode ser acessada pelos clientes e verificar a disponbilidade de horários e datas, os clientes também coseguem agendar suas consultas por meio de links de cada clínica.
+Este é um projeto de sistema Sass para clínicas, com objetivo principal de organizar e facilitar o agendamento de consultas e também oferecer serviços para clientes. Cada clínica possui uma agenda que pode ser acessada pelos clientes e verificar a disponibilidade de horários e datas, os clientes também conseguem agendar suas consultas por meio de links de cada clínica.
 
 ## Descrição Geral
 
